@@ -1,0 +1,19 @@
+body {
+  margin: 0;
+  padding: 0;
+  outline: 0;
+  background-image: url('../../images/background/mountains.jpg');
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center center;
+  background-attachment: fixed;
+  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+
+.gridContainer {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  column-gap: 20px;
+  row-gap: 20px;
+  padding: 20px;
+}

@@ -1,0 +1,16 @@
+.painterGridContainer {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  height: 100vh;
+}
+
+.painterDrawZone {
+  grid-column-start: 1;
+  grid-column-end: 3;
+  background-color: white;
+}
+
+.controlZone {
+  background-color: lightsteelblue;
+  border-left: 1px solid grey;
+}
