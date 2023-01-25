@@ -1,6 +1,6 @@
 import React, { CSSProperties, memo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, Title } from '../components';
+import { Card, Title } from '../components/ui-kit';
 import '../styles/general.style.css';
 
 const mainTitleColor = '#e2e2e2';

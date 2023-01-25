@@ -1,5 +1,5 @@
 import React, { memo, ReactNode } from 'react';
-import '../styles/card.style.css';
+import '../../styles/ui-kit.style.css';
 
 interface Props {
   onClick: () => void;

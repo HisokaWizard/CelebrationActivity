@@ -1,2 +1,2 @@
-export { Card } from './Card';
-export { Title } from './Title';
+export * from './ui-kit';
+export * from './Painter';

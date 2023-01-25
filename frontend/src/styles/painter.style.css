@@ -7,10 +7,22 @@
 .painterDrawZone {
   grid-column-start: 1;
   grid-column-end: 3;
-  background-color: white;
+  background-color: rgba(255, 255, 255, 0.5);
 }
 
 .controlZone {
-  background-color: lightsteelblue;
-  border-left: 1px solid grey;
+  background-color: rgba(157, 166, 178, 0.5);
+  border-left: 2px solid grey;
+}
+
+.palleteInstrument {
+  display: inline-flex;
+  justify-content: stretch;
+  padding: 10px;
+}
+
+.neuralControlPanel {
+  display: block;
+  border-top: 2px solid grey;
+  padding: 10px;
 }

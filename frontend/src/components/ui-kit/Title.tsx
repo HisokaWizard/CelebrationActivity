@@ -1,5 +1,5 @@
 import React, { memo, ReactNode } from 'react';
-import '../styles/title.style.css';
+import '../../styles/ui-kit.style.css';
 
 interface Props {
   children: ReactNode;

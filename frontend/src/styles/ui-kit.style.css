@@ -1,0 +1,52 @@
+/** Title styles */
+.titleContainer {
+  padding: 10px;
+  font-size: 40px;
+  width: 100%;
+  font-weight: bold;
+  text-align: center;
+  letter-spacing: 5px;
+}
+
+/** Card styles */
+.cardContainer {
+  border: 2px solid whitesmoke;
+  background-color: rgba(150, 150, 150, 0.7);
+  border-radius: 4px;
+  padding: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cardContainer:hover {
+  cursor: pointer;
+  background-color: rgba(120, 120, 220, 0.85);
+}
+
+/** Button styles */
+.buttonView {
+  border: 1px solid rgba(25, 118, 210, 0.5);
+  border-radius: 4px;
+  padding: 10px 20px;
+  min-width: 64px;
+  cursor: pointer;
+  display: inline-flex;
+  justify-content: center;
+  width: 100%;
+  font-size: 22px;
+  font-variant: all-petite-caps;
+  color: cornflowerblue;
+  margin-top: 10px;
+}
+.buttonView:hover {
+  background-color: rgb(25, 118, 210);
+  color: whitesmoke;
+}
+
+/** CellButton styles */
+.cellButtonView {
+  border-radius: 4px;
+  margin: 3px;
+  cursor: pointer;
+}

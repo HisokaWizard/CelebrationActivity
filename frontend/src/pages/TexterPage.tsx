@@ -1,5 +1,13 @@
 import React, { memo } from 'react';
+import { Button } from '../components/ui-kit';
+import { useReturnToMain } from '../hooks';
 
 export const TexterPage = memo(() => {
-  return <div>TexterPage</div>;
+  const { returnToMain } = useReturnToMain();
+
+  return (
+    <div>
+      <Button onClick={returnToMain} text={'Go to main page'} />
+    </div>
+  );
 });
