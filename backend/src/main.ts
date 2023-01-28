@@ -6,6 +6,7 @@ import cookieParser from 'cookie-parser';
 import mongoose from 'mongoose';
 import { router } from './services/auth/router/router.js';
 import { errorMiddleware } from './middlewares/error-middleware.js';
+import { nnRouter } from './services/neuralNetwork/router/router.js';
 
 const PORT = process.env.PORT ?? 9000;
 dotenv.config({ path: path.resolve('./', './.env') });
@@ -21,6 +22,7 @@ app.use(
   }),
 );
 app.use('/', router);
+app.use('/', nnRouter);
 app.use(errorMiddleware);
 
 const start = async () => {

@@ -1,14 +1,16 @@
 import { ActionCreatorsMapObject, bindActionCreators, configureStore } from '@reduxjs/toolkit';
-import { setupListeners } from '@reduxjs/toolkit/query';
+import { fetchBaseQuery, setupListeners } from '@reduxjs/toolkit/query';
 import { useMemo } from 'react';
 import { useDispatch } from 'react-redux';
+import { neuralNetworkApi } from './neuralNetwork.api';
 import { painterReducer } from './painter.slice';
 
 export const store = configureStore({
   reducer: {
+    [neuralNetworkApi.reducerPath]: neuralNetworkApi.reducer,
     painterReducer,
   },
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware(),
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(neuralNetworkApi.middleware),
 });
 
 setupListeners(store.dispatch);
