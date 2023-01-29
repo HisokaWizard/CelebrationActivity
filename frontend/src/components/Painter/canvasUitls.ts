@@ -7,7 +7,8 @@ export const resetCanvas = (ctx: Nullable<CanvasRenderingContext2D>, width: numb
   ctx.fillRect(0, 0, width, height);
 };
 
-const cellStep = 10;
+const cellStep = 20;
+const brushSize = 10;
 
 const convertToMultipleOfCellStep = (num: number) => {
   const divisionRemainder = num % 10;
@@ -58,7 +59,6 @@ export const freeDraw = (ctx: CanvasRenderingContext2D, width: number, height: n
     ctx.beginPath();
   };
   const mouseUpCallback = (e: MouseEvent) => {
-    if (e.clientX > width) return;
     isMouseDown = false;
   };
   const mouseMoveCallback = (e: MouseEvent) => {
@@ -66,13 +66,13 @@ export const freeDraw = (ctx: CanvasRenderingContext2D, width: number, height: n
 
     ctx.strokeStyle = color;
     ctx.fillStyle = color;
-    ctx.lineWidth = color === 'white' ? cellStep * 5 : cellStep;
+    ctx.lineWidth = color === 'white' ? brushSize * 5 : brushSize;
 
     ctx.lineTo(e.offsetX, e.offsetY);
     ctx.stroke();
 
     ctx.beginPath();
-    ctx.arc(e.offsetX, e.offsetY, cellStep / 2, 0, Math.PI * 2);
+    ctx.arc(e.offsetX, e.offsetY, brushSize / 2, 0, Math.PI * 2);
     ctx.fill();
 
     ctx.beginPath();

@@ -21,7 +21,7 @@ export class NeuralNetworkController {
           name: it.name ?? '',
           value: it.data,
         }))
-        .filter((it) => !it.name);
+        .filter((it) => it.name);
       return res.json(normalazeResult);
     } catch (error) {
       next(error);

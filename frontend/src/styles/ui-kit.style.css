@@ -61,3 +61,14 @@
   color: dimgray;
   font-size: 16px;
 }
+
+/** Chip styles */
+.chipView {
+  margin: 10px 10px 10px 0;
+  background-color: lightgray;
+  border: 1px solid rgba(25, 118, 210, 0.5);
+  border-radius: 15px;
+  padding: 10px;
+  color: black;
+  font-size: 14px;
+}

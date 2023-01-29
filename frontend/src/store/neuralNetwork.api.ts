@@ -6,6 +6,11 @@ export interface NeuralNetworkData {
   value: Array<number>;
 }
 
+export interface NeuralNetworkResponse {
+  name: string;
+  value: Array<Array<number>>;
+}
+
 export const neuralNetworkApi = createApi({
   reducerPath: 'neuralNetworkApi',
   baseQuery,
@@ -14,7 +19,7 @@ export const neuralNetworkApi = createApi({
     addDataToNetwork: builder.mutation<void, NeuralNetworkData>({
       query: (data) => axiosQuery.post('neural-network', data),
     }),
-    getAllDataSet: builder.query<any, void>({
+    getAllDataSet: builder.query<NeuralNetworkResponse[], void>({
       query: () => axiosQuery.get('neural-network'),
     }),
   }),
