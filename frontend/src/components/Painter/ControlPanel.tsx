@@ -18,11 +18,11 @@ export const ControlPanel = memo(() => {
   const { setBrushColor } = useActions(painterActions);
   const { brushColor } = usePainterState();
   const [name, setName] = useState('');
+  const [claster, setClaster] = useState('');
   const [addNewData] = useAddDataToNetworkMutation();
   const [getAllDataSet, { data: neuralNetworkData }] = useLazyGetAllDataSetQuery();
   const [clasters, setClasters] = useState<string[]>([]);
   const [neuralNetwork, setNeuralNetwork] = useState<any>();
-  const [classifyResult, setClassifyResult] = useState<any>();
 
   useEffect(() => {
     if (!neuralNetworkData) return;
@@ -38,6 +38,7 @@ export const ControlPanel = memo(() => {
     setClasters(_clasters);
     nn.train(_trainData, { log: true });
     setNeuralNetwork(nn);
+    setClaster('');
   }, [neuralNetworkData]);
 
   const clearCanvas = useCallback(() => {
@@ -62,12 +63,8 @@ export const ControlPanel = memo(() => {
     const result = drawGrid(canvasContext, canvasWidth, canvasHeight, true);
     if (!result) return;
     const res = likely(result, neuralNetwork);
-    setClassifyResult(res);
+    setClaster(res);
   }, [canvasContext, getAllDataSet, neuralNetwork]);
-
-  const showGridCell = useCallback(() => {
-    drawGrid(canvasContext, canvasWidth, canvasHeight, true);
-  }, [canvasContext]);
 
   const selectColor = useCallback(
     (color: CellButtonColor) => {
@@ -78,7 +75,6 @@ export const ControlPanel = memo(() => {
 
   const onChangeName = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
-      if (!e.target.value) return;
       setName(e.target.value);
     },
     [setName],
@@ -95,21 +91,22 @@ export const ControlPanel = memo(() => {
       </div>
       <div className="neuralControlPanel">
         <Button onClick={clearCanvas} text={'Clear canvas'} />
-        <Button onClick={showGridCell} text={'Show grid cell'} />
-        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-round' }}>
           <InputText onChange={onChangeName} value={name} label={'Claster name'} />
           <Button onClick={addToLearnPool} text={'Add image to neural network'} />
         </div>
         {clasters.length > 0 && (
-          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', justifyContent: 'start' }}>
             {clasters.map((it, index) => (
               <Chip key={it + index} text={it} />
             ))}
           </div>
         )}
-        <Button onClick={trainingNetwork} text={'Training network will all samples'} />
-        <Button onClick={checkImage} text={'Classify image'} />
-        <div style={{ marginTop: '10px' }}>Result of the classify: {classifyResult}</div>
+        <Button onClick={trainingNetwork} text={'Training network with all samples'} />
+        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+          <InputText value={claster} label={'Classified claster name'} fontSize={28} />
+          <Button onClick={checkImage} text={'Classify image'} />
+        </div>
         <Button onClick={returnToMain} text={'Go to main page'} />
       </div>
     </>

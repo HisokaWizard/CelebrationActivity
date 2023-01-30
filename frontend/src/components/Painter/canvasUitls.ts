@@ -8,7 +8,7 @@ export const resetCanvas = (ctx: Nullable<CanvasRenderingContext2D>, width: numb
 };
 
 const cellStep = 20;
-const brushSize = 10;
+const brushSize = 5;
 
 const convertToMultipleOfCellStep = (num: number) => {
   const divisionRemainder = num % 10;
@@ -34,7 +34,7 @@ const drawCell = (ctx: CanvasRenderingContext2D, x: number, y: number, width: nu
   ctx.strokeStyle = color;
   ctx.lineJoin = 'miter';
   ctx.lineWidth = 1;
-  ctx.fillRect(x, y, cellStep, cellStep);
+  ctx.fillRect(x, y, width, height);
   ctx.fill();
 };
 
@@ -52,9 +52,13 @@ export const drawCellByCanvasScreen = (ctx: Nullable<CanvasRenderingContext2D>, 
 
 export const freeDraw = (ctx: CanvasRenderingContext2D, width: number, height: number, color: CellButtonColor) => {
   let isMouseDown = false;
+  const offsetTop = ctx.canvas.offsetTop;
+  const offsetLeft = ctx.canvas.offsetLeft;
+  const isInsideCanvas = (e: MouseEvent) => e.clientX > offsetLeft && e.clientY > offsetTop && e.clientX < offsetLeft + width && e.offsetY < offsetTop + height;
 
   const mouseDownCallback = (e: MouseEvent) => {
-    if (e.clientX > width) return;
+    const isInside = isInsideCanvas(e);
+    if (!isInside) return;
     isMouseDown = true;
     ctx.beginPath();
   };
@@ -63,6 +67,8 @@ export const freeDraw = (ctx: CanvasRenderingContext2D, width: number, height: n
   };
   const mouseMoveCallback = (e: MouseEvent) => {
     if (!isMouseDown) return;
+    const isInside = isInsideCanvas(e);
+    if (!isInside) return;
 
     ctx.strokeStyle = color;
     ctx.fillStyle = color;
