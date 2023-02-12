@@ -7,7 +7,7 @@ export class NeuralNetworkController {
     try {
       const { name, value } = req.body;
       await neuroNetworkService.addToKnowledgeBase({ name, value });
-      return res.status(200);
+      return res.status(200).send({ result: 'Success entry' });
     } catch (error) {
       next(error);
     }

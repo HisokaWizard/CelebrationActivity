@@ -16,7 +16,7 @@ export const neuralNetworkApi = createApi({
   baseQuery,
   tagTypes: ['auth'],
   endpoints: (builder) => ({
-    addDataToNetwork: builder.mutation<void, NeuralNetworkData>({
+    addDataToNetwork: builder.mutation<{ result: string }, NeuralNetworkData>({
       query: (data) => axiosQuery.post('neural-network', data),
     }),
     getAllDataSet: builder.query<NeuralNetworkResponse[], void>({

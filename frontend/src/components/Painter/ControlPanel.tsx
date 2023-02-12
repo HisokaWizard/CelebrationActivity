@@ -18,6 +18,7 @@ export const ControlPanel = memo(() => {
   const { setBrushColor } = useActions(painterActions);
   const { brushColor } = usePainterState();
   const [name, setName] = useState('');
+  const [saveDataSetResult, setSaveDataSetResult] = useState('');
   const [claster, setClaster] = useState('');
   const [addNewData] = useAddDataToNetworkMutation();
   const [getAllDataSet, { data: neuralNetworkData }] = useLazyGetAllDataSetQuery();
@@ -43,14 +44,17 @@ export const ControlPanel = memo(() => {
 
   const clearCanvas = useCallback(() => {
     resetCanvas(canvasContext, canvasWidth, canvasHeight);
+    setSaveDataSetResult('');
   }, [canvasContext]);
 
   const addToLearnPool = useCallback(async () => {
     const result = drawGrid(canvasContext, canvasWidth, canvasHeight, true);
     if (!result) return;
     try {
-      await addNewData({ name, value: result });
+      const response = await addNewData({ name, value: result });
+      setSaveDataSetResult((response as { data: { result: string } }).data.result ?? 'unknown result');
     } catch (error) {
+      setSaveDataSetResult(error ? (error as Error).message : 'unknown error');
       console.log(error);
     }
   }, [canvasContext, name]);
@@ -95,6 +99,7 @@ export const ControlPanel = memo(() => {
           <InputText onChange={onChangeName} value={name} label={'Claster name'} />
           <Button onClick={addToLearnPool} text={'Add image to neural network'} />
         </div>
+        <div style={{ marginTop: 10 }}>Result of database save: {saveDataSetResult}</div>
         {clasters.length > 0 && (
           <div style={{ display: 'flex', justifyContent: 'start' }}>
             {clasters.map((it, index) => (
