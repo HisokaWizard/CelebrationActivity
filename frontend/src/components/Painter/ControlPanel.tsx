@@ -1,87 +1,70 @@
-import React, { ChangeEvent, memo, useCallback, useEffect, useState } from 'react';
-import { Button, CellButton, CellButtonColor, InputText } from '../ui-kit';
+import React, { memo, useCallback, useEffect, useState } from 'react';
+import { Button, CellButton, CellButtonColor } from '../ui-kit';
 import { useReturnToMain } from '../../hooks';
 import { painterActions, usePainterState } from '../../store/painter.slice';
-import { drawGrid, resetCanvas } from './canvasUitls';
+import { resetCanvas } from './canvasUitls';
 import { useActions } from '../../store';
 import '../../styles/painter.style.css';
-import { useAddDataToNetworkMutation, useLazyGetAllDataSetQuery } from '../../store/neuralNetwork.api';
-import { NeuralNetwork, likely } from 'brain.js';
-import { Chip } from '../ui-kit/Chip';
-import { canvasHeight, canvasWidth } from './CanvasPanel';
+import { load } from '@tensorflow-models/mobilenet';
+import * as tf from '@tensorflow/tfjs';
+import * as tfc from '@tensorflow/tfjs-core';
 
-type TrainDataType = { input: Array<number>; output: any };
+let model: any = null;
 
 export const ControlPanel = memo(() => {
-  const { canvasContext } = usePainterState();
+  const { canvasContext, canvasSize, canvas } = usePainterState();
   const { returnToMain } = useReturnToMain();
   const { setBrushColor } = useActions(painterActions);
   const { brushColor } = usePainterState();
-  const [name, setName] = useState('');
-  const [saveDataSetResult, setSaveDataSetResult] = useState('');
-  const [claster, setClaster] = useState('');
-  const [addNewData] = useAddDataToNetworkMutation();
-  const [getAllDataSet, { data: neuralNetworkData }] = useLazyGetAllDataSetQuery();
-  const [clasters, setClasters] = useState<string[]>([]);
-  const [neuralNetwork, setNeuralNetwork] = useState<any>();
+  const [] = useState();
 
   useEffect(() => {
-    if (!neuralNetworkData) return;
-    const nn = new NeuralNetwork();
-    const _clasters: string[] = [];
-    const _trainData: TrainDataType[] = [];
-    neuralNetworkData.forEach((it) => {
-      _clasters.push(it.name);
-      it.value.forEach((d) => {
-        _trainData.push({ input: d, output: { [it.name]: 1 } });
-      });
+    tf.ready().then(() => {
+      load()
+        .then((result) => {
+          model = result;
+        })
+        .catch((error) => {
+          console.error('Neural network load error: ', error);
+        });
     });
-    setClasters(_clasters);
-    nn.train(_trainData, { log: true });
-    setNeuralNetwork(nn);
-    setClaster('');
-  }, [neuralNetworkData]);
+  }, []);
 
   const clearCanvas = useCallback(() => {
-    resetCanvas(canvasContext, canvasWidth, canvasHeight);
-    setSaveDataSetResult('');
-  }, [canvasContext]);
-
-  const addToLearnPool = useCallback(async () => {
-    const result = drawGrid(canvasContext, canvasWidth, canvasHeight, true);
-    if (!result) return;
-    try {
-      const response = await addNewData({ name, value: result });
-      setSaveDataSetResult((response as { data: { result: string } }).data.result ?? 'unknown result');
-    } catch (error) {
-      setSaveDataSetResult(error ? (error as Error).message : 'unknown error');
-      console.log(error);
-    }
-  }, [canvasContext, name]);
-
-  const trainingNetwork = useCallback(() => {
-    getAllDataSet();
-  }, [canvasContext, getAllDataSet]);
-
-  const checkImage = useCallback(() => {
-    const result = drawGrid(canvasContext, canvasWidth, canvasHeight, true);
-    if (!result) return;
-    const res = likely(result, neuralNetwork);
-    setClaster(res);
-  }, [canvasContext, getAllDataSet, neuralNetwork]);
+    resetCanvas(canvasContext, canvasSize.width, canvasSize.height);
+  }, [canvasContext, canvasSize]);
 
   const selectColor = useCallback(
     (color: CellButtonColor) => {
       setBrushColor(color);
     },
-    [setBrushColor],
+    [setBrushColor, canvasSize],
   );
 
-  const onChangeName = useCallback(
-    (e: ChangeEvent<HTMLInputElement>) => {
-      setName(e.target.value);
+  const classifyImage = useCallback(async () => {
+    try {
+      const result = await model.classify(canvas);
+      console.log(result);
+    } catch (error) {
+      console.error('Neural network classify error: ', error);
+    }
+  }, [canvas]);
+
+  const loadImageToCanvas = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      if (!canvasContext) return;
+      const file = event.target.files?.[0];
+      if (!file) return;
+      const url = URL.createObjectURL(file);
+      const img = new Image();
+      img.onload = (e) => {
+        if (!e) return;
+        URL.revokeObjectURL((e.currentTarget as any)?.src);
+        canvasContext.drawImage(e.currentTarget as any, 0, 0);
+      };
+      img.src = url;
     },
-    [setName],
+    [canvasContext],
   );
 
   return (
@@ -95,23 +78,8 @@ export const ControlPanel = memo(() => {
       </div>
       <div className="neuralControlPanel">
         <Button onClick={clearCanvas} text={'Clear canvas'} />
-        <div style={{ display: 'flex', justifyContent: 'space-round' }}>
-          <InputText onChange={onChangeName} value={name} label={'Claster name'} />
-          <Button onClick={addToLearnPool} text={'Add image to neural network'} />
-        </div>
-        <div style={{ marginTop: 10 }}>Result of database save: {saveDataSetResult}</div>
-        {clasters.length > 0 && (
-          <div style={{ display: 'flex', justifyContent: 'start' }}>
-            {clasters.map((it, index) => (
-              <Chip key={it + index} text={it} />
-            ))}
-          </div>
-        )}
-        <Button onClick={trainingNetwork} text={'Training network with all samples'} />
-        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-          <InputText value={claster} label={'Classified claster name'} fontSize={28} />
-          <Button onClick={checkImage} text={'Classify image'} />
-        </div>
+        <input style={{ paddingTop: '10px' }} width={100} type="file" onChange={loadImageToCanvas} />
+        <Button onClick={classifyImage} text={'Classify current image'} />
         <Button onClick={returnToMain} text={'Go to main page'} />
       </div>
     </>

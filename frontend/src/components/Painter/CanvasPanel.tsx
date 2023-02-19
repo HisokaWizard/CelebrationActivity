@@ -1,25 +1,22 @@
-import React, { memo, useEffect, useRef } from 'react';
+import React, { memo, useCallback, useEffect, useRef } from 'react';
 import { useActions } from '../../store';
 import { painterActions, usePainterState } from '../../store/painter.slice';
 import { freeDraw, resetCanvas } from './canvasUitls';
 
-export const canvasWidth = 500;
-export const canvasHeight = 500;
-
 export const CanvasPanel = memo(() => {
   const canvas = useRef<HTMLCanvasElement>(null);
   const canvasContainerRef = useRef<HTMLDivElement>(null);
-  const { setCanvas, setCanvasContext } = useActions(painterActions);
-  const { brushColor, canvasContext } = usePainterState();
+  const { setCanvas, setCanvasContext, setCanvasSize } = useActions(painterActions);
+  const { brushColor, canvasContext, canvasSize } = usePainterState();
 
-  // const changeScreenSize = useCallback(() => {
-  //   if (!canvasContainerRef.current) return;
-  //   setCanvasSize({ width: canvasContainerRef.current.offsetWidth, height: window.innerHeight });
-  // }, [canvasContainerRef.current]);
+  const changeScreenSize = useCallback(() => {
+    if (!canvasContainerRef.current) return;
+    setCanvasSize({ width: canvasContainerRef.current.offsetWidth, height: window.innerHeight });
+  }, [canvasContainerRef.current]);
 
   useEffect(() => {
     if (!canvasContext) return;
-    const { mouseDownCallback, mouseMoveCallback, mouseUpCallback } = freeDraw(canvasContext, canvasWidth, canvasHeight, brushColor);
+    const { mouseDownCallback, mouseMoveCallback, mouseUpCallback } = freeDraw(canvasContext, canvasSize.width, canvasSize.height, brushColor);
 
     window.addEventListener('mousedown', mouseDownCallback);
     window.addEventListener('mouseup', mouseUpCallback);
@@ -32,26 +29,26 @@ export const CanvasPanel = memo(() => {
     };
   }, [brushColor, canvasContext]);
 
-  // useEffect(() => {
-  //   changeScreenSize();
-  //   window.addEventListener('resize', changeScreenSize);
-  //   return () => {
-  //     window.removeEventListener('resize', changeScreenSize);
-  //   };
-  // }, [canvasContainerRef.current]);
+  useEffect(() => {
+    changeScreenSize();
+    window.addEventListener('resize', changeScreenSize);
+    return () => {
+      window.removeEventListener('resize', changeScreenSize);
+    };
+  }, []);
 
   useEffect(() => {
     if (!canvas.current || !canvas.current.getContext) return;
     setCanvas(canvas.current);
     const canvasContext = canvas.current.getContext('2d');
     if (!canvasContext) return;
-    resetCanvas(canvasContext, canvasWidth, canvasHeight);
+    resetCanvas(canvasContext, canvasSize.width, canvasSize.height);
     setCanvasContext(canvasContext);
-  }, [canvas.current]);
+  }, [canvas.current, canvasSize]);
 
   return (
-    <div ref={canvasContainerRef}>
-      <canvas id="painter" width={canvasWidth} height={canvasHeight} ref={canvas}></canvas>
+    <div style={{ width: '100%' }} ref={canvasContainerRef}>
+      <canvas id="painter" width={canvasSize.width} height={canvasSize.height} ref={canvas}></canvas>
     </div>
   );
 });
